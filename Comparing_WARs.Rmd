@@ -1,0 +1,52 @@
+---
+title: "Comparing WARs"
+author: "Rob Weber"
+date: "July 27, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r ridge regression}
+# going to use the glmnet method of performing a ridge regression
+library(glmnet)
+# this gets a matrix of the model because the first argument of glmnet requires a matrix
+mat <- model.matrix(W ~ fangraphs_WAR + br_WAR + bp_WAR, df)
+# this for the next argument
+wins <- df$W
+# this is the base ridge regression
+ridge.reg <- glmnet(mat, wins, alpha=0, nlambda=100, lambda.min.ratio=0.0001)
+# to get the best betas for predicting, we need to find the best lambda for doing so
+set.seed(2017)
+cv <- cv.glmnet(mat, wins, alpha=0, nlambda=100, lambda.min.ratio=0.0001)
+best.lambda <- cv$lambda.min
+# this shows the betas for the ridge regression using the best lamda 
+predict(ridge.reg, s = best.lambda, type="coefficients")
+```
+
+They don't seem to be significantly different from one another, but, to find that out for sure, we can bootstrap the regression to find 95% confidence intervals.
+- This next chunk is just in here as reference code. It took a few hours on my PC, so, I just wrote the data to a csv and uploaded it.
+```{r bootstrapping}
+set.seed(1)
+100000 -> loops # number of times looped
+# df to store the results
+data.frame("Loop" = c(1:loops), "fangraphs_WAR" = 0, "br_WAR" = 0, "bp_WAR" = 0) -> df.test 
+# this is essentially the same code as above
+for(i in 1:loops) {
+  sort(sample(1:30, 20, replace = FALSE)) -> selection
+  df[c(selection), ] -> boot.df
+  x <- model.matrix(W ~ fangraphs_WAR + br_WAR + bp_WAR, data = boot.df)
+  y <- boot.df$W
+  ridge.mod <- glmnet(x, y, alpha=0, nlambda=100, lambda.min.ratio=0.0001)
+  cv.test <- cv.glmnet(x, y, alpha=0, nlambda=100, lambda.min.ratio=0.0001, grouped = F)
+  best.lambda <- cv.test$lambda.min
+  abs(as.vector(predict(ridge.mod, s = best.lambda, type = "coefficients"))[3:5]) -> df.test[i, 2:4]
+}
+```
+
+```{r Significance}
+
+```
+
