@@ -47,6 +47,16 @@ for(i in 1:loops) {
 ```
 
 ```{r Significance}
-
+# this creates a df to store the CIs
+comp.df <- data.frame("WAR" = c("fWAR", "br_WAR", "bs_WAR"), "Lower" = 0, "Upper" = 0)
+# the next three lines find the the 95% CI and store it in comp.df
+as.vector(quantile(df.test$fangraphs_WAR, c(0.025, 0.975))) -> comp.df[1, c(2, 3)]
+as.vector(quantile(df.test$br_WAR, c(0.025, 0.975))) -> comp.df[2, c(2, 3)]
+as.vector(quantile(df.test$bp_WAR, c(0.025, 0.975))) -> comp.df[3, c(2, 3)]
+# The next step I like to take is to look at a plot of the three distributions of betas
+# need df.test long instead of wide for ggplot
+gather(df.test[2:4], key = "WAR", value = "beta") -> df.test_long
+ggplot(df.test_long, aes(x = beta, fill = WAR)) +
+  geom_density(alpha = 0.3)
 ```
-
+You can see pretty obviously in the plot, the distributions of the betas are all pretty close together and there is no chance that any of them have an overlap of 5% or less. Therefore, we can say with 95% confidence that none of these three of the most popular WARs are significantly better or worse than the others.
