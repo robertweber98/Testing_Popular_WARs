@@ -1,5 +1,5 @@
 # Testing_Popular_WARs
-This project is an inferential test of the predictive ability of the three most popular position-player WARs; fangraphs.com, baseball-reference.com, and baseball prospectus. 
+This project is an inferential test, using a ridge-regression, of the predictive ability of the three most popular position-player WARs; fangraphs.com, baseball-reference.com, and baseball prospectus. 
 ### The conclusion being that none of them are reasonably better at predicting a team's wins than any other.
 
 ## Data
