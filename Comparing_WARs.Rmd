@@ -55,7 +55,7 @@ as.vector(quantile(df.test$br_WAR, c(0.025, 0.975))) -> comp.df[2, c(2, 3)]
 as.vector(quantile(df.test$bp_WAR, c(0.025, 0.975))) -> comp.df[3, c(2, 3)]
 # The next step I like to take is to look at a plot of the three distributions of betas
 # need df.test long instead of wide for ggplot
-gather(df.test[2:4], key = "WAR", value = "beta") -> df.test_long
+gather(df.test[3:5], key = "WAR", value = "beta") -> df.test_long
 ggplot(df.test_long, aes(x = beta, fill = WAR)) +
   geom_density(alpha = 0.3)
 ```
